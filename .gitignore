@@ -1,0 +1,13 @@
+# зависимости и сборка (восстанавливаются командами npm install / npm run build)
+node_modules/
+dist/
+
+# исходные большие картинки (в сайте используются готовые WebP из public/)
+source-photos/
+
+# локальные служебные файлы
+.claude/
+*.bak
+*.log
+.DS_Store
+Thumbs.db

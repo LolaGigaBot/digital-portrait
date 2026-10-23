@@ -1,0 +1,27 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Дмитрий — системный администратор · резюме</title>
+  <meta name="description" content="Резюме и цифровой памятник Дмитрия: системный администратор, программист компьютерных систем. Опыт, навыки, путь и проекты." />
+  <meta name="theme-color" content="#f6f3ee" />
+  <!-- Пока сайт на оценке, просим поисковики его не индексировать. Для публикации «насовсем» удалите эту строку. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <script>
+    try {
+      var t = localStorage.getItem("theme");
+      if (t === "dark") document.documentElement.dataset.theme = "dark";
+      var l = document.createElement("link");
+      l.rel = "preload"; l.as = "image"; l.type = "image/webp";
+      l.href = "photos/" + (t === "dark" ? "dark" : "light") + "-1.webp";
+      document.head.appendChild(l);
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
+

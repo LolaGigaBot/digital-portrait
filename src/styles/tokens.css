@@ -1,0 +1,92 @@
+﻿/* Дизайн-токены. Тема (data-theme) и возрастной стиль (data-age-style) независимы. */
+:root {
+  --white: #fff;
+  --black: #0b0b0c;
+  --orange: #ff5a28;
+  --red: #bf3f27;
+  --green: #1f7a45;
+
+  /* светлая тема */
+  --bg: #f4f2ed;
+  --bg-2: #ebe8e0;
+  --surface: #faf9f5;
+  --surface-2: #eeebe3;
+  --text: #1d1f1b;
+  --muted: #62655e;
+  --line: #cdc9be;
+  --accent: var(--orange);
+  --accent-text: #b4340e; /* оранжевый для мелкого текста: контраст 4.5:1 на светлом фоне */
+  --accent-ink: #1a1a18;
+  --focus: #1a5fd6;
+  --glow: radial-gradient(60% 55% at 50% 45%, rgba(242, 107, 29, .28), transparent 70%);
+  --head-fill: #ffffff;
+  --head-stroke: #1d1f1b;
+  --cavity: #e9e6dd;
+  --photo-filter: none;
+  --shadow: 0 1px 0 rgba(0,0,0,.04), 0 22px 44px -30px rgba(30, 28, 20, .4);
+
+  /* возрастной стиль: «свободный» (по умолчанию) */
+  --r: 18px;
+  --font-body: "Inter Tight Variable", "Inter Tight", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Inter Tight Variable", "Inter Tight", "Segoe UI", system-ui, sans-serif;
+  --display-weight: 500;
+  --display-transform: none;
+  --display-tracking: -.045em;
+  --tilt: -1deg;
+  --motion: 1;
+  --border-w: 1px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  /* тёмная тема: преимущественно чёрная, нейтральная */
+  --bg: #050506;
+  --bg-2: #0a0a0b;
+  --surface: #0d0d0f;
+  --surface-2: #141416;
+  --text: #ececec;
+  --muted: #8b8d92;
+  --line: #212225;
+  --accent: #9fc0e8; /* холодный ледяной синий в тон логотипам */
+  --accent-ink: #07090d;
+  --red: #a8b6f2;
+  --green: #4fb27a;
+  --accent-text: #b3cdee;
+  --focus: #8ab8ff;
+  --glow: radial-gradient(55% 50% at 50% 42%, rgba(255, 255, 255, .09), rgba(255, 255, 255, .025) 55%, transparent 72%);
+  --head-fill: #0b0b0c;
+  --head-stroke: #6b6e75;
+  --cavity: #030304;
+  --photo-filter: saturate(.9) contrast(1.06);
+  --shadow: 0 22px 44px -24px #000;
+}
+
+:root[data-age-style="mature"] {
+  --r: 12px;
+  --font-display: "Segoe UI Semibold", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --display-weight: 700;
+  --display-transform: none;
+  --display-tracking: -.01em;
+  --tilt: 0deg;
+  --motion: .6;
+  --border-w: 1.5px;
+}
+
+:root[data-age-style="formal"] {
+  --r: 2px;
+  --font-body: Georgia, "Times New Roman", serif;
+  --font-display: Georgia, "Times New Roman", serif;
+  --display-weight: 400;
+  --display-transform: none;
+  --display-tracking: 0;
+  --tilt: 0deg;
+  --motion: .3;
+  --border-w: 1px;
+  --glow: none;
+}
+
+
+
+
+
+
