@@ -614,3 +614,76 @@ h3 { letter-spacing: -.02em; font-weight: 600; }
 :root[data-theme="dark"] input, :root[data-theme="dark"] textarea, :root[data-theme="dark"] [contenteditable] { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M11%205%20H21%20M11%2027%20H21%20M16%205%20V27%22%20fill%3D%22none%22%20stroke%3D%22%23dbe6f4%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M11%205%20H21%20M11%2027%20H21%20M16%205%20V27%22%20fill%3D%22none%22%20stroke%3D%22%239fc0e8%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E") 16 16, text; }
 button:disabled, .stage-btn:disabled { cursor: not-allowed !important; }
 
+
+/* Comic particle trail behind the mouse cursor (canvas drawn by CursorTrail.tsx) */
+.cursor-trail { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9990; }
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) { .cursor-trail { display: none; } }
+
+/* ===== Section transitions: reveal on scroll + comic divider between sections ===== */
+/* Reveal is only armed by useReveal() (class reveal-on on <html>), so without JS everything stays visible */
+.reveal-on .section:not(.hero):not(.is-in) { opacity: 0; transform: translateY(46px); }
+.reveal-on .section { transition: opacity .7s ease, transform .8s cubic-bezier(.2, .85, .25, 1); }
+.reveal-on .section.is-in { opacity: 1; transform: none; }
+/* title: ink wipe from left to right; rubric line draws itself; ghost number drops in */
+.reveal-on .section:not(.hero) .display { clip-path: inset(0 100% 0 0); transition: clip-path .9s cubic-bezier(.7, 0, .2, 1) .15s; }
+.reveal-on .section.is-in .display { clip-path: inset(0 0 -.2em 0); }
+.reveal-on .section:not(.hero) .sec-rule { position: relative; border-bottom-color: transparent; }
+.reveal-on .section:not(.hero) .sec-rule::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 0; border-bottom: 1px dashed var(--line); transform: scaleX(0); transform-origin: left; transition: transform .9s ease .05s; }
+.reveal-on .section.is-in .sec-rule::after { transform: scaleX(1); }
+.reveal-on .section:not(.hero) .ghost-num { opacity: 0; transform: translateY(-24px) scale(.94); transition: opacity .9s ease .35s, transform 1s cubic-bezier(.2, .9, .3, 1) .35s; }
+.reveal-on .section.is-in .ghost-num { opacity: 1; transform: none; }
+.reveal-on .section:not(.hero) .sec-lead, .reveal-on .section:not(.hero) .sec-text, .reveal-on .section:not(.hero) .aside { opacity: 0; transform: translateY(14px); transition: opacity .7s ease .5s, transform .7s ease .5s; }
+.reveal-on .section.is-in .sec-lead, .reveal-on .section.is-in .sec-text, .reveal-on .section.is-in .aside { opacity: 1; transform: none; }
+
+/* divider */
+.divider { position: relative; height: 88px; margin: 0 clamp(16px, 4vw, 40px); overflow: visible; }
+.div-dots { position: absolute; inset: 14px 0; background-image: radial-gradient(circle, var(--accent) 1.5px, transparent 2px); background-size: 11px 11px;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); mask: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); opacity: .5; }
+.div-slash { position: absolute; left: 0; right: 0; top: 50%; height: 14px; margin-top: -7px; background: var(--ink, var(--text)); transform: skewY(-2.2deg) scaleX(0); transform-origin: left center;
+  transition: transform .8s cubic-bezier(.7, 0, .2, 1); }
+.div-slash-2 { height: 5px; margin-top: 15px; background: var(--accent); transition-delay: .12s; }
+.divider.is-in .div-slash { transform: skewY(-2.2deg) scaleX(1); }
+.div-burst { position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; overflow: visible; fill: var(--accent); stroke: var(--ink, var(--text)); stroke-width: 2.4; stroke-linejoin: round;
+  transform: scale(0) rotate(-120deg); transition: transform .65s cubic-bezier(.2, 1.7, .4, 1) .55s; filter: drop-shadow(3px 3px 0 var(--ink-shadow, rgba(0,0,0,.25))); }
+.div-burst circle { fill: var(--bg); }
+.divider.is-in .div-burst { transform: scale(1) rotate(8deg); animation: burst-wobble 4.5s ease-in-out 1.4s infinite alternate; }
+@keyframes burst-wobble { to { transform: scale(1.06) rotate(-6deg); } }
+:root[data-theme="dark"] .div-slash { background: #dbe6f4; }
+:root[data-theme="dark"] .div-burst { stroke: #050506; }
+@media (max-width: 640px) { .divider { height: 68px; } .div-burst { width: 58px; height: 58px; margin: -29px 0 0 -29px; } }
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on .section, .reveal-on .section *, .div-slash, .div-burst { transition: none !important; animation: none !important; }
+  .div-slash { transform: skewY(-2.2deg) scaleX(1); } .div-burst { transform: scale(1) rotate(8deg); }
+}
+
+/* ===== Cross-browser hardening (Safari 14+, Firefox, Chrome/Edge) ===== */
+/* 1) Horizontal overflow guard without relying on overflow:clip (Safari < 16). On body it propagates to the viewport, so position:sticky keeps working. */
+body { overflow-x: hidden; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* 2) iOS Safari: 100vh is the "large" viewport (under the address bar). Use dynamic units where supported. */
+@supports (height: 100dvh) {
+  .page { min-height: 100dvh; }
+  .hero { min-height: 92dvh; }
+  .skills-list ul.skills-ul { max-height: min(430px, 58dvh); }
+}
+/* 3) Particle canvas: size comes from JS (clientWidth/Height), not 100vw/100vh (scrollbar and iOS toolbar) */
+.cursor-trail { width: 100%; height: 100%; }
+/* 4) Heavy fixed grain overlay (full-screen SVG feTurbulence) removed: costly on iOS/Safari GPUs, barely visible */
+:root[data-theme="dark"] .page::after { display: none; }
+/* 5) color-mix() fallbacks for Safari < 16.2 / Chrome < 111 / Firefox < 113 */
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  .stage-track { background: rgba(29, 31, 27, .14); }
+  :root[data-theme="dark"] .stage-track { background: rgba(236, 236, 236, .16); }
+  .photo-shape { background: rgba(255, 90, 40, .12); }
+  :root[data-theme="dark"] .photo-shape { background: #0b0b0c; }
+  .photo-frame { background: #efe9df; }
+  :root[data-theme="dark"] .photo-frame { background: #0c0c0d; }
+  :root:not([data-theme="dark"]) .photo-frame { background: #fff; }
+  :root[data-theme="dark"] .nick-plate { border-color: #9fc0e8; }
+  .road-card.st-now { box-shadow: 0 0 0 3px rgba(255, 90, 40, .35); animation: none; }
+  :root[data-theme="dark"] .road-card.st-now { box-shadow: 0 0 0 3px rgba(159, 192, 232, .35); }
+}
+/* 6) Focus ring fallback for browsers without :focus-visible (Safari < 15.4): ring on :focus, removed for mouse via :focus-visible support */
+@supports not selector(:focus-visible) {
+  :focus { outline: 3px solid var(--focus); outline-offset: 3px; }
+}

@@ -13,8 +13,12 @@
       var t = localStorage.getItem("theme");
       if (t === "dark") document.documentElement.dataset.theme = "dark";
       var l = document.createElement("link");
+      var n = "photos/" + (t === "dark" ? "dark" : "light") + "-1";
       l.rel = "preload"; l.as = "image"; l.type = "image/webp";
-      l.href = "photos/" + (t === "dark" ? "dark" : "light") + "-1.webp";
+      l.href = n + ".webp";
+      // тот же srcset/sizes, что у <img> в карусели: браузер предзагрузит ровно тот файл, который выберет для <img>
+      l.setAttribute("imagesrcset", n + "-480.webp 480w, " + n + ".webp 900w");
+      l.setAttribute("imagesizes", "(max-width: 600px) 90vw, 480px");
       document.head.appendChild(l);
     } catch (e) {}
   </script>

@@ -78,9 +78,11 @@ export function ExperienceRibbon() {
       <div
         className="ribbon" ref={scroller}
         onClick={(e) => { const el = (e.target as HTMLElement).closest<HTMLElement>("[data-co]"); if (el?.dataset.co) open(el.dataset.co); }}
-        onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-        onFocusCapture={(e) => { if ((e.target as HTMLElement).matches(":focus-visible")) setHover(true); }} onBlurCapture={() => setHover(false)}
-        onTouchStart={() => setTouching(true)} onTouchEnd={() => { window.clearTimeout(touchTimer.current); touchTimer.current = window.setTimeout(() => setTouching(false), 1800); }}
+        onPointerEnter={(e) => { if (e.pointerType === "mouse") setHover(true); }} onPointerLeave={(e) => { if (e.pointerType === "mouse") setHover(false); }}
+        onFocusCapture={(e) => { let kb = true; try { kb = (e.target as HTMLElement).matches(":focus-visible"); } catch { /* Safari < 15.4 */ } if (kb) setHover(true); }} onBlurCapture={() => setHover(false)}
+        onTouchStart={() => { window.clearTimeout(touchTimer.current); setTouching(true); }}
+        onTouchEnd={() => { window.clearTimeout(touchTimer.current); touchTimer.current = window.setTimeout(() => setTouching(false), 1800); }}
+        onTouchCancel={() => { window.clearTimeout(touchTimer.current); setTouching(false); }}
       >
         {Array.from({ length: COPIES }, (_, copy) => (
           <div key={copy} className="ribbon-set" ref={copy === 0 ? firstSet : undefined} aria-hidden={copy > 0 || undefined}>

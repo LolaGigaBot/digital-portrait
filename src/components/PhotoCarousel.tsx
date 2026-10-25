@@ -32,8 +32,8 @@ export function PhotoCarousel({ theme }: { theme: Theme }) {
     <div
       className="carousel" role="region" aria-roledescription="карусель" aria-label="Фотографии Дмитрия" tabIndex={0}
       onKeyDown={onKey}
-      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      onFocusCapture={(e) => { if ((e.target as HTMLElement).matches(":focus-visible")) setHover(true); }}
+      onPointerEnter={(e) => { if (e.pointerType === "mouse") setHover(true); }} onPointerLeave={(e) => { if (e.pointerType === "mouse") setHover(false); }}
+      onFocusCapture={(e) => { let kb = true; try { kb = (e.target as HTMLElement).matches(":focus-visible"); } catch { /* Safari < 15.4 */ } if (kb) setHover(true); }}
       onBlurCapture={() => setHover(false)}
     >
       <div className="photo-shape" data-shape={index % 3} aria-hidden="true" />
@@ -69,7 +69,7 @@ export function PhotoCarousel({ theme }: { theme: Theme }) {
           <span className="nick-text" style={{ "--n": NICKS[theme].length } as React.CSSProperties}>{NICKS[theme]}</span>
         </span>
       </p>
-      <p className="sr-only" aria-live="polite" aria-atomic="true">Фото {index + 1} из {count}: {PHOTOS[theme][index].alt}</p>
+      <p className="sr-only" aria-live={playing ? "off" : "polite"} aria-atomic="true">Фото {index + 1} из {count}: {PHOTOS[theme][index].alt}</p>
       <div className="carousel-ctrl">
         <button type="button" className="car-btn" onClick={() => go(-1)} aria-label="Предыдущее фото">‹</button>
         <div className="car-dots" role="group" aria-label="Выбор фото">

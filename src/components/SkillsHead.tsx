@@ -45,10 +45,15 @@ export function SkillsHead() {
   useEffect(() => {
     const stageEl = stage.current;
     if (!stageEl) return;
+    // размеры сцены кэшируются и обновляются только при изменении размера: чтение clientWidth в каждом кадре
+    // после записи transform вызывало до 18 синхронных пересчётов вёрстки за кадр
+    let sw = stageEl.clientWidth, sh = stageEl.clientHeight;
+    const roSize = new ResizeObserver(() => { sw = stageEl.clientWidth; sh = stageEl.clientHeight; });
+    roSize.observe(stageEl);
     const place = (i: number, x: number, y: number, angle: number) => {
       const el = els.current[i];
-      if (el) el.style.transform = `translate(-50%,-50%) translate(${(x / VIEW.w) * stageEl.clientWidth}px,${(y / VIEW.h) * stageEl.clientHeight}px)`;
-      el?.style.setProperty("--rot", `${angle}rad`);
+      if (el) el.style.transform = `translate(-50%,-50%) translate(${((x / VIEW.w) * sw).toFixed(1)}px,${((y / VIEW.h) * sh).toFixed(1)}px)`;
+      el?.style.setProperty("--rot", `${angle.toFixed(3)}rad`);
     };
     const positionAll = (balls?: Ball[]) => SKILLS.forEach((_, i) => {
       const b = balls?.[i];
@@ -60,7 +65,7 @@ export function SkillsHead() {
       positionAll();
       const ro = new ResizeObserver(() => positionAll());
       ro.observe(stageEl);
-      return () => ro.disconnect();
+      return () => { ro.disconnect(); roSize.disconnect(); };
     }
 
     const { Engine, Bodies, Body, Composite, Constraint } = Matter;
@@ -143,7 +148,7 @@ export function SkillsHead() {
     if (import.meta.env.DEV) (window as unknown as { __skills?: unknown }).__skills = { balls, CAVITY, pointInPolygon };
 
     return () => {
-      running = false; cancelAnimationFrame(raf); io.disconnect(); ro.disconnect();
+      running = false; cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); roSize.disconnect();
       stageEl.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);

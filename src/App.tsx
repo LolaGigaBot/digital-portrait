@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { ThemeFlag, type Theme } from "./components/ThemeFlag";
 import { Hero } from "./components/Hero";
 import { AgeBar } from "./components/AgeBar";
@@ -8,6 +8,9 @@ import { Roadmap } from "./components/Roadmap";
 import { LinksProjects } from "./components/LinksProjects";
 import { COPY } from "./data/copy";
 import { SITE } from "./config/site";
+import { CursorTrail } from "./components/CursorTrail";
+import { SectionDivider } from "./components/SectionDivider";
+import { useReveal } from "./lib/useReveal";
 import { getAge, getNow, resolveStyle, type AgeStyle } from "./lib/age";
 import { read, write } from "./lib/storage";
 
@@ -17,7 +20,7 @@ export default function App() {
   const [theme, setTheme] = useState<Theme>(() => (read("theme") === "dark" ? "dark" : "light"));
   const [style, setStyle] = useState<AgeStyle>(() => resolveStyle(read("ageStyle"), age));
 
-  useEffect(() => {
+  useLayoutEffect(() => { // до первой отрисовки: без вспышки не того возрастного стиля
     document.documentElement.dataset.theme = theme;
     document.documentElement.dataset.ageStyle = style;
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#0c0f12" : "#f6f3ee");
@@ -32,11 +35,14 @@ export default function App() {
     return () => window.removeEventListener("scroll", on);
   }, []);
 
+  useReveal(); // выезд разделов и разделителей при прокрутке
+
   const applyTheme = (t: Theme) => { setTheme(t); write("theme", t); };
   const applyStyle = (s: AgeStyle) => { setStyle(s); write("ageStyle", s); };
 
   return (
     <div className="page">
+      <CursorTrail />
       <header className={`site-top${stuck ? " is-stuck" : ""}`}>
         <ThemeFlag theme={theme} onChange={applyTheme} />
         <span className="top-caption">{COPY.topCaption}</span>
@@ -44,9 +50,13 @@ export default function App() {
       <main>
         <Hero theme={theme} now={now} />
         <AgeBar now={now} style={style} onStyleChange={applyStyle} />
+        <SectionDivider />
         <ExperienceRibbon />
+        <SectionDivider />
         <SkillsHead />
+        <SectionDivider />
         <Roadmap />
+        <SectionDivider />
         <LinksProjects theme={theme} />
       </main>
       <footer className="footer">
