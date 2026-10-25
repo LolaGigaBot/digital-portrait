@@ -597,3 +597,6 @@ h3 { letter-spacing: -.02em; font-weight: 600; }
 @media (max-width: 820px) {
   .road-cols { grid-template-columns: 1fr; max-width: 560px; }
 }
+
+/* Light-theme portraits are opaque with a white background: make the frame white so they blend in */
+:root:not([data-theme="dark"]) .photo-frame { background: #fff; }
